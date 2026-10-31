@@ -1,76 +1,120 @@
-🧮 Interactive Web Calculator - CodeAlpha Task 1
+🚀 CodeAlpha Internship Tasks & Projects
 
-A sleek, responsive, and modern calculator built using HTML5, CSS3, and JavaScript. Developed as part of the CodeAlpha Web Development Internship.
+Welcome to the central repository for the CodeAlpha Web Development Internship. This repository contains complete implementations of assigned tasks, featuring modern UI/UX design, clean code architecture, responsive styling, and interactive JavaScript features.
 
-✨ Features
+📌 Repository Overview
 
-Basic Arithmetic Operations: Addition (+), Subtraction (-), Multiplication (×), and Division (÷).
+This repository consists of three independent sub-projects:
 
-Percentage & Decimal Calculations: Supports floating-point calculations and percentage conversions.
-
-Clear & Delete Functionality:
-
-AC (All Clear): Clears the entire current calculation.
-
-DEL (Delete): Removes the last entered character for quick corrections.
-
-Keyboard Support: Type numbers and operations directly using your computer keyboard:
-
-0–9, ., +, -, *, /
-
-Enter or = for calculate
-
-Backspace to delete
-
-Escape or c to clear
-
-Responsive UI: Clean glassmorphism design that looks great on mobile, tablet, and desktop screens.
-
-Error Handling: Displays friendly messages on invalid operations (e.g., division by zero).
-
-🛠️ Tech Stack
-
-HTML5: Structured semantic layout for the display and keypad.
-
-CSS3: Modern styling with CSS Grid/Flexbox, smooth transitions, and hover effects.
-
-JavaScript (ES6+): Event handling, input validation, and mathematical logic.
-
-📁 Project Structure
-
-CodeAlpha_Calculator/
-├── index.html        # Main HTML markup
-├── style.css         # Styling and responsive design
-├── script.js         # Calculator calculation logic & keyboard events
-└── README.md         # Project documentation
+CodeAlpha_task/
+├── 📁 CodeAlpha_Calculator/       # Task 1: Interactive Web Calculator
+├── 📁 CodeAlpha_ImageGallery/      # Task 2: Responsive & Interactive Image Gallery
+├── 📁 CodeAlpha_MusicPlayer/       # Task 3: Spotify Desktop Music Player Replica
+└── 📄 README.md                    # Master documentation & project navigation
 
 
-🚀 How to Run Locally
+📂 Sub-Projects Breakdown
+
+1️⃣ Interactive Web Calculator
+
+A sleek, glassmorphic calculator built for precision, rapid arithmetic calculations, and clean error handling.
+
+Tech Stack: HTML5, CSS3 (Modern Glassmorphism & Flexbox/Grid), JavaScript (ES6+).
+
+Key Features:
+
+Arithmetic operations: Addition, subtraction, multiplication, division, and percentage calculations.
+
+Real-time calculation preview and continuous operand chaining.
+
+Robust division-by-zero protection and state validation.
+
+Complete physical keyboard input support (Enter, Backspace, Esc, and number keys).
+
+Smooth press animations with active tactile feedback.
+
+2️⃣ Interactive Image Gallery
+
+A modern, responsive photo showcase and portfolio gallery with dynamic category filtering and full-screen lightbox viewing.
+
+Tech Stack: HTML5, CSS3 / Tailwind CSS, JavaScript (ES6+).
+
+Key Features:
+
+Multi-category filtering (All, Nature, Architecture, Travel, Street).
+
+Full-screen modal lightbox preview with zoom, captions, and high-resolution view.
+
+Next / Previous navigation controls with keyboard arrow support (→, ←, Esc).
+
+Fluid responsive masonry/CSS grid adapting seamlessly across mobile, tablet, and desktop viewports.
+
+Smooth image fade-in loading and hover zoom transitions.
+
+3️⃣ Spotify Desktop Music Player
+
+An authentic desktop-inspired Spotify Web Player replica with rich regional playlists, local MP3 playback, and a dual audio synthesis fallback.
+
+Tech Stack: HTML5, Tailwind CSS, JavaScript (ES6+), Web Audio API.
+
+Key Features:
+
+Authentic Windows desktop layout with 3-panel split (Library navigation, center viewport, collapsible Now Playing sidebar).
+
+Preloaded regional playlists (Harris Jayaraj Hits, Tamil Melodies, Kannada Trending, Phonk Drift, and Liked Songs).
+
+Dual Audio Engine: HTML5 audio streaming paired with a native browser Web Audio API oscillator synthesis fallback to prevent playback stalls.
+
+Open MP3 Support: Load and play your own local music files directly from your computer into a dedicated Local Files playlist.
+
+Interactive playback bar with seekable timeline scrubber, volume/mute toggles, repeat/shuffle controls, and connected device indicators.
+
+🛠️ Global Tech Stack & Tools
+
+Languages: HTML5, CSS3, JavaScript (ES6+)
+
+Styling & Frameworks: Tailwind CSS, Flexbox, CSS Grid, Glassmorphic UI Design
+
+APIs & Features: HTML5 Audio API, Web Audio API (AudioContext), Blob URLs, Event Delegation
+
+Version Control: Git, GitHub
+
+Editor: Visual Studio Code (Live Server)
+
+🚀 How to Run the Projects Locally
 
 Clone the repository:
 
 git clone https://github.com/varunsai17-spike/CodeAlpha_task.git
 
 
-Navigate to the project folder:
+Navigate into the project directory:
 
 cd CodeAlpha_task
 
 
-Open the project:
+Run any specific task:
 
-Double-click index.html to open it in any web browser.
+To launch the Calculator:
 
-Or open the folder in VS Code and click Go Live using the Live Server extension.
+Open CodeAlpha_Calculator/index.html in your browser or with VS Code Live Server.
 
-👨‍💻 Author
+To launch the Image Gallery:
 
-Name: Varun Sai V
+Open CodeAlpha_ImageGallery/index.html in your browser.
+
+To launch the Music Player:
+
+Open CodeAlpha_MusicPlayer/index.html in your browser.
+
+👨‍💻 Intern Profile
+
+Developer: Varun Sai V
 
 GitHub: @varunsai17-spike
 
-Role: Web Development Intern at CodeAlpha
+Internship: Web Development Intern at CodeAlpha
 
-📄 License
+📄 License & Attribution
 
-This project is created for educational and internship submission purposes.
+These projects have been built as part of the curriculum and evaluation for the CodeAlpha Internship program. All rights to respective music references, artwork, and demo media remain with their respective creators.
