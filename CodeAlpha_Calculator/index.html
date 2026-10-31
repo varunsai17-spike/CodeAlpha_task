@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Glass Calculator</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="calculator-card">
+    <!-- Display Screen -->
+    <div class="display">
+      <div class="history-row" id="historyDisplay"></div>
+      <div class="input-row" id="currentDisplay">0</div>
+      <div class="preview-row" id="previewDisplay"></div>
+    </div>
+
+    <!-- Keypad Grid -->
+    <div class="keypad">
+      <button class="btn btn-action" data-action="all-clear">AC</button>
+      <button class="btn btn-action" data-action="delete">⌫</button>
+      <button class="btn btn-action" data-action="percent">%</button>
+      <button class="btn btn-op" data-operator="÷">÷</button>
+
+      <button class="btn btn-num" data-num="7">7</button>
+      <button class="btn btn-num" data-num="8">8</button>
+      <button class="btn btn-num" data-num="9">9</button>
+      <button class="btn btn-op" data-operator="×">×</button>
+
+      <button class="btn btn-num" data-num="4">4</button>
+      <button class="btn btn-num" data-num="5">5</button>
+      <button class="btn btn-num" data-num="6">6</button>
+      <button class="btn btn-op" data-operator="-">−</button>
+
+      <button class="btn btn-num" data-num="1">1</button>
+      <button class="btn btn-num" data-num="2">2</button>
+      <button class="btn btn-num" data-num="3">3</button>
+      <button class="btn btn-op" data-operator="+">+</button>
+
+      <button class="btn btn-num btn-zero" data-num="0">0</button>
+      <button class="btn btn-num" data-num=".">.</button>
+      <button class="btn btn-equals" data-action="equals">=</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

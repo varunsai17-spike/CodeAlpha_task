@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spotify - Desktop</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            spotify: {
+              black: "#000000",
+              base: "#121212",
+              elevated: "#242424",
+              highlight: "#1f1f1f",
+              hover: "#2a2a2a",
+              green: "#1ed760",
+              greenHover: "#1fdf64",
+              subtext: "#b3b3b3",
+              accentBlue: "#101b42"
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom clean scrollbars matching Spotify Desktop */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.35); }
+    
+    body {
+      background-color: #000000;
+      color: #ffffff;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      user-select: none;
+      overflow: hidden;
+    }
+
+    /* Range input styling */
+    input[type="range"] {
+      -webkit-appearance: none;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 9999px;
+      outline: none;
+      cursor: pointer;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #ffffff;
+      display: none;
+      transition: all 0.1s ease;
+    }
+    .slider-group:hover input[type="range"]::-webkit-slider-thumb {
+      display: block;
+    }
+    .slider-group:hover input[type="range"] {
+      background: #1ed760;
+    }
+  </style>
+</head>
+<body class="h-screen w-screen flex flex-col bg-black text-white antialiased selection:bg-spotify-green selection:text-black">
+
+  <!-- =========================================================================
+       1. WINDOWS APP TITLE BAR & TOP NAVIGATION
+       ========================================================================= -->
+  <header class="h-10 bg-black flex items-center justify-between px-3 text-xs flex-shrink-0 z-40 select-none border-b border-white/5">
+    <!-- Left: App Logo & Windows Navigation Dots -->
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-2">
+        <svg class="w-5 h-5 text-white fill-current" viewBox="0 0 24 24">
+          <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.503 17.309c-.217.356-.677.47-1.033.253-2.827-1.727-6.386-2.119-10.58-1.161-.407.094-.816-.162-.909-.57-.093-.408.163-.817.57-.91 4.595-1.049 8.529-.607 11.699 1.332.356.216.47.678.253 1.036zm1.469-3.268c-.273.444-.855.587-1.3.313-3.235-1.988-8.167-2.563-11.993-1.401-.5.152-1.033-.131-1.185-.632-.153-.5.132-1.033.633-1.186 4.382-1.33 9.807-.69 13.513 1.587.444.274.587.857.314 1.301zm.126-3.41c-3.88-2.304-10.28-2.516-13.992-1.389-.594.18-1.227-.156-1.408-.75-.181-.594.156-1.228.75-1.408 4.267-1.295 11.328-1.045 15.795 1.606.535.318.709 1.01.391 1.545-.318.534-1.01.708-1.545.391z"/>
+        </svg>
+        <span class="font-bold text-white tracking-wide text-xs">Spotify</span>
+      </div>
+      <!-- History Arrows -->
+      <div class="flex items-center gap-1.5 ml-2">
+        <button id="historyBackBtn" class="w-6 h-6 rounded-full bg-spotify-base hover:bg-spotify-elevated flex items-center justify-center text-spotify-subtext hover:text-white transition">
+          <svg class="w-3.5 h-3.5 stroke-current" fill="none" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
+        </button>
+        <button id="historyForwardBtn" class="w-6 h-6 rounded-full bg-spotify-base hover:bg-spotify-elevated flex items-center justify-center text-spotify-subtext hover:text-white transition">
+          <svg class="w-3.5 h-3.5 stroke-current" fill="none" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Center: Search Pill & Home Navigation -->
+    <div class="flex items-center gap-2 max-w-md w-full justify-center">
+      <button id="topHomeBtn" class="w-8 h-8 rounded-full bg-spotify-highlight hover:bg-spotify-hover hover:scale-105 flex items-center justify-center text-white transition" title="Home">
+        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      </button>
+      <div class="relative w-72">
+        <input id="desktopSearchInput" type="text" placeholder="What do you want to play?" class="w-full bg-spotify-highlight text-xs rounded-full py-2 pl-9 pr-8 text-white placeholder-spotify-subtext outline-none focus:ring-2 focus:ring-white/40 transition border border-transparent focus:border-white/20" />
+        <svg class="w-4 h-4 text-spotify-subtext absolute left-3 top-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        <button id="clearSearchBtn" class="hidden absolute right-3 top-2 text-spotify-subtext hover:text-white text-xs">&times;</button>
+      </div>
+      <!-- Hidden Local MP3 File Input -->
+      <input type="file" id="localFileInput" accept="audio/*" multiple class="hidden" />
+      <button id="openLocalFileBtn" class="px-2.5 py-1.5 rounded-full bg-spotify-highlight hover:bg-spotify-hover text-[11px] font-bold text-white transition flex items-center gap-1 border border-white/10 hover:border-spotify-green" title="Play local MP3 from computer">
+        <svg class="w-3.5 h-3.5 text-spotify-green fill-current" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+        <span>Open MP3</span>
+      </button>
+    </div>
+
+    <!-- Right: Account Profile & Windows Controls -->
+    <div class="flex items-center gap-3">
+      <!-- User Profile Badge -->
+      <button id="userProfileBtn" class="flex items-center gap-2 bg-spotify-highlight hover:bg-spotify-hover py-1 px-2.5 rounded-full transition group">
+        <div class="w-5 h-5 rounded-full bg-[#ff5522] flex items-center justify-center font-black text-[10px] text-black">
+          V
+        </div>
+        <span class="text-xs font-semibold text-white">varun</span>
+        <span class="bg-spotify-green text-black font-extrabold text-[9px] px-1.5 py-0.2 rounded-sm uppercase tracking-wider">Premium</span>
+      </button>
+
+      <!-- Windows Window Controls (Minimize, Maximize, Close) -->
+      <div class="flex items-center ml-2">
+        <button class="w-8 h-8 flex items-center justify-center text-spotify-subtext hover:text-white hover:bg-white/10 transition" title="Minimize">
+          <svg class="w-3 h-3 stroke-current" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4"/></svg>
+        </button>
+        <button class="w-8 h-8 flex items-center justify-center text-spotify-subtext hover:text-white hover:bg-white/10 transition" title="Maximize">
+          <svg class="w-3 h-3 stroke-current" fill="none" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+        </button>
+        <button class="w-8 h-8 flex items-center justify-center text-spotify-subtext hover:text-white hover:bg-red-600 transition" title="Close">
+          <svg class="w-3 h-3 stroke-current" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       2. THREE-PANEL DESKTOP BODY (Library Left, Content Center, Now Playing Right)
+       ========================================================================= -->
+  <main class="flex-1 flex overflow-hidden p-2 gap-2 bg-black">
+
+    <!-- LEFT SIDEBAR: "Your Library" -->
+    <aside class="w-72 flex-shrink-0 bg-spotify-base rounded-lg flex flex-col overflow-hidden border border-white/5">
+      <!-- Library Header -->
+      <div class="p-4 pb-2 flex items-center justify-between">
+        <button class="flex items-center gap-3 text-spotify-subtext hover:text-white transition font-bold text-sm">
+          <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+            <path d="M3 22a1 1 0 0 1-1-1V3a1 1 0 0 1 2 0v18a1 1 0 0 1-1 1zM15.5 2.134A1 1 0 0 0 14 3v18a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V3a1 1 0 0 0-1.5-.866l-5 3zM6.5 2.134A1 1 0 0 0 5 3v18a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V3a1 1 0 0 0-1.5-.866l-5 3z"/>
+          </svg>
+          <span>Your Library</span>
+        </button>
+        <div class="flex items-center gap-1">
+          <button id="createPlaylistBtn" class="w-7 h-7 rounded-full hover:bg-white/10 flex items-center justify-center text-spotify-subtext hover:text-white transition" title="Create Playlist">
+            <svg class="w-4 h-4 stroke-current" fill="none" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Library Filter Tags -->
+      <div class="px-4 py-2 flex items-center gap-1.5 overflow-x-auto text-[11px] font-semibold">
+        <button class="lib-filter-pill px-3 py-1 rounded-full bg-spotify-highlight hover:bg-spotify-hover text-white transition active:scale-95" data-filter="all">Playlists</button>
+        <button class="lib-filter-pill px-3 py-1 rounded-full bg-spotify-highlight hover:bg-spotify-hover text-white transition active:scale-95" data-filter="artists">Artists</button>
+        <button class="lib-filter-pill px-3 py-1 rounded-full bg-spotify-highlight hover:bg-spotify-hover text-white transition active:scale-95" data-filter="albums">Albums</button>
+      </div>
+
+      <!-- Search & Sort Row -->
+      <div class="px-4 py-2 flex items-center justify-between text-xs text-spotify-subtext">
+        <button class="hover:text-white transition flex items-center gap-1">
+          <svg class="w-3.5 h-3.5 stroke-current" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        </button>
+        <span class="hover:text-white cursor-pointer transition flex items-center gap-1">
+          Recents
+          <svg class="w-3.5 h-3.5 stroke-current" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </span>
+      </div>
+
+      <!-- Scrollable Playlists / Saved Items -->
+      <div id="libraryListContainer" class="flex-1 overflow-y-auto px-2 space-y-1 pb-4">
+        <!-- Injected via JavaScript -->
+      </div>
+    </aside>
+
+    <!-- CENTER MAIN VIEWPORT -->
+    <section class="flex-1 bg-spotify-base rounded-lg flex flex-col overflow-hidden relative border border-white/5">
+      
+      <!-- Top Scrollable Content Container -->
+      <div id="mainScrollableArea" class="flex-1 overflow-y-auto pb-10">
+
+        <!-- ==========================================
+             HOME VIEW
+             ========================================== -->
+        <div id="desktopHomeView" class="p-6 space-y-7">
+          
+          <!-- Filter Tabs: All, Music, Podcasts -->
+          <div class="flex items-center gap-2">
+            <button class="category-pill px-4 py-1.5 rounded-full text-xs font-bold bg-white text-black transition hover:scale-105 active:scale-95" data-cat="all">All</button>
+            <button class="category-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-spotify-highlight text-white hover:bg-spotify-hover transition hover:scale-105 active:scale-95" data-cat="music">Music</button>
+            <button class="category-pill px-4 py-1.5 rounded-full text-xs font-semibold bg-spotify-highlight text-white hover:bg-spotify-hover transition hover:scale-105 active:scale-95" data-cat="podcasts">Podcasts</button>
+          </div>
+
+          <!-- Top 8 Grid Cards -->
+          <div id="topCardsGrid" class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <!-- Injected via JavaScript -->
+          </div>
+
+          <!-- Section: Jump back in -->
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <h2 class="text-xl font-bold tracking-tight text-white hover:underline cursor-pointer">Jump back in</h2>
+              <span class="text-xs font-bold text-spotify-subtext hover:text-white cursor-pointer uppercase tracking-wider">Show all</span>
+            </div>
+            <div id="jumpBackInRow" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+              <!-- Injected via JavaScript -->
+            </div>
+          </div>
+
+          <!-- Section: Recommended Stations -->
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <h2 class="text-xl font-bold tracking-tight text-white hover:underline cursor-pointer">Recommended Stations</h2>
+              <span class="text-xs font-bold text-spotify-subtext hover:text-white cursor-pointer uppercase tracking-wider">Show all</span>
+            </div>
+            <div id="recommendedStationsRow" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+              <!-- Injected via JavaScript -->
+            </div>
+          </div>
+
+          <!-- Section: South Indian / Regional Hits -->
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <h2 class="text-xl font-bold tracking-tight text-white hover:underline cursor-pointer">Trending in Tumakuru &amp; Bengaluru</h2>
+              <span class="text-xs font-bold text-spotify-subtext hover:text-white cursor-pointer uppercase tracking-wider">Show all</span>
+            </div>
+            <div id="trendingRegionalRow" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+              <!-- Injected via JavaScript -->
+            </div>
+          </div>
+        </div>
+
+        <!-- ==========================================
+             PLAYLIST DETAILS VIEW
+             ========================================== -->
+        <div id="desktopPlaylistView" class="hidden">
+          <!-- Dynamic Gradient Header Banner -->
+          <div id="playlistBanner" class="p-8 pt-10 bg-gradient-to-b from-indigo-900/90 via-spotify-base/90 to-spotify-base flex items-end gap-6 transition-colors duration-500">
+            <img id="detailCover" src="" class="w-52 h-52 object-cover rounded shadow-2xl flex-shrink-0" />
+            <div class="space-y-2">
+              <span class="text-xs uppercase font-extrabold text-white tracking-widest">Public Playlist</span>
+              <h1 id="detailTitle" class="text-4xl md:text-6xl font-black text-white tracking-tight leading-none">Liked Songs</h1>
+              <p id="detailSubtitle" class="text-sm text-spotify-subtext font-medium pt-1"></p>
+              <div class="flex items-center gap-2 text-xs text-white/90 pt-1">
+                <span class="font-bold">varun</span>
+                <span>•</span>
+                <span id="detailSongCount">4 songs</span>
+                <span>•</span>
+                <span class="text-spotify-subtext">about 18 min</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Bar: Play Button, Heart, Options -->
+          <div class="px-8 py-5 flex items-center gap-6 bg-gradient-to-b from-spotify-base to-spotify-base/50">
+            <button id="playlistPlayBtn" class="w-14 h-14 rounded-full bg-spotify-green hover:bg-spotify-greenHover hover:scale-105 active:scale-95 flex items-center justify-center text-black shadow-xl transition">
+              <svg class="w-7 h-7 ml-0.5 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+            <button id="playlistHeartBtn" class="text-spotify-subtext hover:text-white hover:scale-110 transition">
+              <svg class="w-8 h-8 fill-current text-spotify-green" viewBox="0 0 24 24">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+              </svg>
+            </button>
+            <button class="text-spotify-subtext hover:text-white transition">
+              <svg class="w-7 h-7 fill-current" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+            </button>
+          </div>
+
+          <!-- Track List Table Header -->
+          <div class="px-8 pb-8">
+            <div class="grid grid-cols-12 gap-4 border-b border-white/10 pb-2 text-xs font-semibold uppercase tracking-wider text-spotify-subtext px-4">
+              <span class="col-span-1 text-center">#</span>
+              <span class="col-span-5">Title</span>
+              <span class="col-span-4">Album</span>
+              <span class="col-span-2 text-right">
+                <svg class="w-4 h-4 inline stroke-current" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              </span>
+            </div>
+
+            <!-- Track Rows -->
+            <div id="playlistTracksList" class="space-y-1 pt-2">
+              <!-- Injected via JavaScript -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- RIGHT PANEL: "Now Playing View" Sidebar -->
+    <aside id="nowPlayingSidebar" class="w-72 flex-shrink-0 bg-spotify-base rounded-lg flex flex-col overflow-hidden border border-white/5 p-4 space-y-4">
+      <div class="flex items-center justify-between pb-2 border-b border-white/10">
+        <h3 class="text-sm font-bold text-white truncate" id="sidebarPlaylistTitle">NEXT UP! • NCTS</h3>
+        <button id="closeSidebarBtn" class="text-spotify-subtext hover:text-white text-lg">&times;</button>
+      </div>
+
+      <!-- Large Current Song Art -->
+      <div class="aspect-square w-full rounded-lg overflow-hidden shadow-2xl bg-spotify-highlight relative group">
+        <img id="sidebarCover" src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500" class="w-full h-full object-cover" />
+      </div>
+
+      <!-- Current Song Info -->
+      <div>
+        <div class="flex items-center justify-between">
+          <h2 id="sidebarSongTitle" class="text-lg font-black text-white hover:underline cursor-pointer truncate">NEXT UP!</h2>
+          <button class="text-spotify-subtext hover:text-spotify-green transition">
+            <svg class="w-5 h-5 fill-current text-spotify-green" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+          </button>
+        </div>
+        <p id="sidebarArtist" class="text-xs text-spotify-subtext font-semibold hover:underline cursor-pointer">NCTS</p>
+      </div>
+
+      <!-- Connected Device Banner -->
+      <div class="bg-spotify-highlight p-3 rounded-lg flex items-center justify-between border border-white/5">
+        <div class="flex items-center gap-2.5">
+          <svg class="w-5 h-5 text-spotify-green stroke-current" fill="none" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 18v-6a9 9 0 0118 0v6M3 18a3 3 0 003 3h1a2 2 0 002-2v-4a2 2 0 00-2-2H4.5A1.5 1.5 0 013 11.5v6.5zm18 0a3 3 0 01-3 3h-1a2 2 0 01-2-2v-4a2 2 0 012-2h2.5a1.5 1.5 0 001.5-1.5v6.5z" />
+          </svg>
+          <div class="truncate">
+            <p class="text-[10px] text-spotify-subtext font-bold uppercase">Connected Device</p>
+            <p class="text-xs font-bold text-white truncate">Mithun's OnePlus Nord Buds 3</p>
+          </div>
+        </div>
+        <span class="w-2 h-2 rounded-full bg-spotify-green animate-pulse"></span>
+      </div>
+
+      <!-- Credits Card -->
+      <div class="bg-spotify-highlight p-3.5 rounded-lg border border-white/5 space-y-2">
+        <span class="text-xs font-bold text-white">Credits</span>
+        <div class="flex items-center justify-between text-xs">
+          <div>
+            <p class="font-bold text-white">Varun Sai V</p>
+            <p class="text-[11px] text-spotify-subtext">Main Producer, Mixer</p>
+          </div>
+          <button class="border border-white/20 hover:border-white px-2.5 py-1 rounded-full font-bold text-[11px]">Follow</button>
+        </div>
+      </div>
+    </aside>
+
+  </main>
+
+  <!-- =========================================================================
+       3. BOTTOM PERSISTENT MEDIA PLAYBACK BAR
+       ========================================================================= -->
+  <footer class="h-20 bg-black flex items-center justify-between px-4 z-40 select-none border-t border-white/10">
+    
+    <!-- Left: Current Song Thumbnail & Name -->
+    <div class="flex items-center gap-3.5 w-1/4 min-w-[200px]">
+      <img id="playerCover" src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=150" class="w-14 h-14 rounded object-cover shadow-md flex-shrink-0" />
+      <div class="truncate">
+        <h4 id="playerTitle" class="text-sm font-bold text-white truncate hover:underline cursor-pointer">NEXT UP!</h4>
+        <p id="playerArtist" class="text-xs text-spotify-subtext truncate hover:underline cursor-pointer">NCTS</p>
+      </div>
+      <button id="playerLikeBtn" class="text-spotify-subtext hover:text-spotify-green hover:scale-110 transition ml-2">
+        <svg class="w-5 h-5 fill-current text-spotify-green" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+      </button>
+    </div>
+
+    <!-- Center: Transport Controls & Scrubber Timeline -->
+    <div class="flex flex-col items-center gap-1.5 w-2/4 max-w-xl">
+      <div class="flex items-center gap-5">
+        <!-- Shuffle -->
+        <button id="shuffleBtn" class="text-spotify-subtext hover:text-white transition" title="Enable Shuffle">
+          <svg class="w-4 h-4 fill-none stroke-current" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        </button>
+
+        <!-- Previous -->
+        <button id="prevBtn" class="text-spotify-subtext hover:text-white transition" title="Previous">
+          <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+        </button>
+
+        <!-- Main Play/Pause Button -->
+        <button id="playPauseBtn" class="w-9 h-9 rounded-full bg-white hover:scale-105 active:scale-95 flex items-center justify-center text-black shadow-lg transition">
+          <svg id="playIcon" class="w-4 h-4 ml-0.5 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          <svg id="pauseIcon" class="w-4 h-4 fill-current hidden" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+        </button>
+
+        <!-- Next -->
+        <button id="nextBtn" class="text-spotify-subtext hover:text-white transition" title="Next">
+          <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+        </button>
+
+        <!-- Repeat -->
+        <button id="repeatBtn" class="text-spotify-subtext hover:text-white transition" title="Enable Repeat">
+          <svg class="w-4 h-4 stroke-current" fill="none" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        </button>
+      </div>
+
+      <!-- Scrubber Row -->
+      <div class="w-full flex items-center gap-2.5 text-[11px] font-mono text-spotify-subtext slider-group">
+        <span id="currentTime">0:00</span>
+        <input id="progressBar" type="range" min="0" max="100" value="0" class="w-full h-1" />
+        <span id="totalDuration">3:24</span>
+      </div>
+    </div>
+
+    <!-- Right: Device Connect, Queue & Volume Slider -->
+    <div class="flex items-center justify-end gap-3 w-1/4 min-w-[200px]">
+      <button class="text-spotify-green hover:scale-105 transition" title="Connected to Mithun's OnePlus Nord Buds 3">
+        <svg class="w-4 h-4 fill-none stroke-current" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 18v-6a9 9 0 0118 0v6M3 18a3 3 0 003 3h1a2 2 0 002-2v-4a2 2 0 00-2-2H4.5A1.5 1.5 0 013 11.5v6.5zm18 0a3 3 0 01-3 3h-1a2 2 0 01-2-2v-4a2 2 0 012-2h2.5a1.5 1.5 0 001.5-1.5v6.5z"/>
+        </svg>
+      </button>
+
+      <button id="toggleSidebarBtn" class="text-spotify-subtext hover:text-white transition" title="Now Playing View">
+        <svg class="w-4 h-4 fill-none stroke-current" stroke-width="2" viewBox="0 0 24 24">
+          <rect x="3" y="3" width="18" height="18" rx="2"/>
+          <path d="M15 3v18"/>
+        </svg>
+      </button>
+
+      <div class="flex items-center gap-2 slider-group">
+        <button id="muteBtn" class="text-spotify-subtext hover:text-white transition">
+          <svg id="volHighIcon" class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+          <svg id="volMuteIcon" class="w-4 h-4 fill-current hidden" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3z"/></svg>
+        </button>
+        <input id="volumeSlider" type="range" min="0" max="1" step="0.01" value="0.8" class="w-24 h-1" />
+      </div>
+    </div>
+  </footer>
+
+  <!-- HTML5 Native Audio Streaming Component -->
+  <audio id="audioEngine" preload="metadata"></audio>
+
+  <!-- =========================================================================
+       4. APPLICATION ENGINE (Data & Interactive Logic)
+       ========================================================================= -->
+  <script>
+    // Real audio only: no synthetic or generated fallback tones.
+    const topGridItems = [
+      {
+        id: "original-mix",
+        title: "My Original Mix",
+        cover: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300",
+        artist: "Varun • Original Tracks",
+        songs: [
+          {
+            title: "Midnight Echo",
+            artist: "Varun",
+            album: "Original Mix",
+            duration: "3:50",
+            audioUrl: "assets/songs/original_1.mp3"
+          },
+          {
+            title: "Sunset Drive",
+            artist: "Varun",
+            album: "Original Mix",
+            duration: "3:40",
+            audioUrl: "assets/songs/original_2.mp3"
+          },
+          {
+            title: "City Lights",
+            artist: "Varun",
+            album: "Original Mix",
+            duration: "3:20",
+            audioUrl: "assets/songs/original_3.mp3"
+          }
+        ]
+      }
+    ];
+
+    const jumpBackInItems = [
+      {
+        title: "Midnight Echo",
+        artist: "Varun",
+        cover: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300",
+        audioUrl: "assets/songs/original_1.mp3"
+      },
+      {
+        title: "Sunset Drive",
+        artist: "Varun",
+        cover: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300",
+        audioUrl: "assets/songs/original_2.mp3"
+      },
+      {
+        title: "City Lights",
+        artist: "Varun",
+        cover: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300",
+        audioUrl: "assets/songs/original_3.mp3"
+      }
+    ];
+
+    const recommendedStations = [
+      {
+        title: "Midnight Echo",
+        artist: "Varun",
+        cover: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300",
+        audioUrl: "assets/songs/original_1.mp3"
+      },
+      {
+        title: "Sunset Drive",
+        artist: "Varun",
+        cover: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300",
+        audioUrl: "assets/songs/original_2.mp3"
+      },
+      {
+        title: "City Lights",
+        artist: "Varun",
+        cover: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300",
+        audioUrl: "assets/songs/original_3.mp3"
+      }
+    ];
+
+    const libraryItems = [
+      { id: "original-mix", title: "My Original Mix", subtitle: "Playlist • 3 real tracks", cover: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=200" },
+      { id: "local-files", title: "Local Files", subtitle: "Playlist • Click to load MP3s", isLocal: true }
+    ];
+
+    /* DOM Selectors */
+    const audioEngine = document.getElementById("audioEngine");
+    const topCardsGrid = document.getElementById("topCardsGrid");
+    const jumpBackInRow = document.getElementById("jumpBackInRow");
+    const recommendedStationsRow = document.getElementById("recommendedStationsRow");
+    const trendingRegionalRow = document.getElementById("trendingRegionalRow");
+    const libraryListContainer = document.getElementById("libraryListContainer");
+
+    const desktopHomeView = document.getElementById("desktopHomeView");
+    const desktopPlaylistView = document.getElementById("desktopPlaylistView");
+    const topHomeBtn = document.getElementById("topHomeBtn");
+    const desktopSearchInput = document.getElementById("desktopSearchInput");
+    const clearSearchBtn = document.getElementById("clearSearchBtn");
+
+    const localFileInput = document.getElementById("localFileInput");
+    const openLocalFileBtn = document.getElementById("openLocalFileBtn");
+
+    const detailCover = document.getElementById("detailCover");
+    const detailTitle = document.getElementById("detailTitle");
+    const detailSubtitle = document.getElementById("detailSubtitle");
+    const detailSongCount = document.getElementById("detailSongCount");
+    const playlistTracksList = document.getElementById("playlistTracksList");
+    const playlistPlayBtn = document.getElementById("playlistPlayBtn");
+
+    const playerCover = document.getElementById("playerCover");
+    const playerTitle = document.getElementById("playerTitle");
+    const playerArtist = document.getElementById("playerArtist");
+    const playPauseBtn = document.getElementById("playPauseBtn");
+    const playIcon = document.getElementById("playIcon");
+    const pauseIcon = document.getElementById("pauseIcon");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const progressBar = document.getElementById("progressBar");
+    const currentTimeEl = document.getElementById("currentTime");
+    const totalDurationEl = document.getElementById("totalDuration");
+    const volumeSlider = document.getElementById("volumeSlider");
+    const muteBtn = document.getElementById("muteBtn");
+    const volHighIcon = document.getElementById("volHighIcon");
+    const volMuteIcon = document.getElementById("volMuteIcon");
+
+    const nowPlayingSidebar = document.getElementById("nowPlayingSidebar");
+    const toggleSidebarBtn = document.getElementById("toggleSidebarBtn");
+    const closeSidebarBtn = document.getElementById("closeSidebarBtn");
+    const sidebarCover = document.getElementById("sidebarCover");
+    const sidebarSongTitle = document.getElementById("sidebarSongTitle");
+    const sidebarArtist = document.getElementById("sidebarArtist");
+    const sidebarPlaylistTitle = document.getElementById("sidebarPlaylistTitle");
+
+    /* State */
+    let isPlaying = false;
+    let currentPlaylist = topGridItems[0];
+    let currentTrackIndex = 0;
+    let currentTrack = currentPlaylist.songs[0];
+
+    function formatTime(seconds) {
+      if (isNaN(seconds) || !isFinite(seconds)) return "0:00";
+      const m = Math.floor(seconds / 60);
+      const s = Math.floor(seconds % 60);
+      return `${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+
+    function playTrack(trackObj) {
+      currentTrack = trackObj;
+      playerTitle.textContent = trackObj.title;
+      playerArtist.textContent = trackObj.artist;
+      if (trackObj.cover) playerCover.src = trackObj.cover;
+
+      sidebarSongTitle.textContent = trackObj.title;
+      sidebarArtist.textContent = trackObj.artist;
+      if (trackObj.cover) sidebarCover.src = trackObj.cover;
+      sidebarPlaylistTitle.textContent = `${trackObj.title} • ${trackObj.artist}`;
+
+      progressBar.value = 0;
+      currentTimeEl.textContent = "0:00";
+      totalDurationEl.textContent = trackObj.duration || "3:30";
+
+      const audioSrc = trackObj.audioUrl || "";
+      audioEngine.pause();
+      audioEngine.src = audioSrc;
+      audioEngine.volume = parseFloat(volumeSlider.value || 0.8);
+
+      audioEngine.play().then(() => {
+        isPlaying = true;
+        playIcon.classList.add("hidden");
+        pauseIcon.classList.remove("hidden");
+      }).catch(() => {
+        isPlaying = false;
+        playIcon.classList.remove("hidden");
+        pauseIcon.classList.add("hidden");
+      });
+    }
+
+    function togglePlay() {
+      if (!isPlaying) {
+        isPlaying = true;
+        playIcon.classList.add("hidden");
+        pauseIcon.classList.remove("hidden");
+
+        audioEngine.play().catch(() => {
+          isPlaying = false;
+          playIcon.classList.remove("hidden");
+          pauseIcon.classList.add("hidden");
+        });
+      } else {
+        isPlaying = false;
+        playIcon.classList.remove("hidden");
+        pauseIcon.classList.add("hidden");
+        audioEngine.pause();
+      }
+    }
+
+    audioEngine.addEventListener("timeupdate", () => {
+      if (!isNaN(audioEngine.duration) && audioEngine.duration > 0) {
+        const pct = (audioEngine.currentTime / audioEngine.duration) * 100;
+        progressBar.value = pct;
+        currentTimeEl.textContent = formatTime(audioEngine.currentTime);
+        totalDurationEl.textContent = formatTime(audioEngine.duration);
+      }
+    });
+
+    audioEngine.addEventListener("ended", () => {
+      nextTrack();
+    });
+
+    progressBar.addEventListener("input", (e) => {
+      if (!isNaN(audioEngine.duration) && audioEngine.duration > 0) {
+        audioEngine.currentTime = (e.target.value / 100) * audioEngine.duration;
+      }
+    });
+
+    volumeSlider.addEventListener("input", (e) => {
+      const vol = parseFloat(e.target.value);
+      audioEngine.volume = vol;
+      if (vol === 0) {
+        volHighIcon.classList.add("hidden");
+        volMuteIcon.classList.remove("hidden");
+      } else {
+        volHighIcon.classList.remove("hidden");
+        volMuteIcon.classList.add("hidden");
+      }
+    });
+
+    muteBtn.addEventListener("click", () => {
+      if (parseFloat(volumeSlider.value) > 0) {
+        volumeSlider.value = 0;
+        audioEngine.volume = 0;
+        volHighIcon.classList.add("hidden");
+        volMuteIcon.classList.remove("hidden");
+      } else {
+        volumeSlider.value = 0.8;
+        audioEngine.volume = 0.8;
+        volHighIcon.classList.remove("hidden");
+        volMuteIcon.classList.add("hidden");
+      }
+    });
+
+    function nextTrack() {
+      if (currentPlaylist && currentPlaylist.songs && currentPlaylist.songs.length > 0) {
+        currentTrackIndex = (currentTrackIndex + 1) % currentPlaylist.songs.length;
+        const song = currentPlaylist.songs[currentTrackIndex];
+        playTrack({
+          title: song.title,
+          artist: song.artist,
+          album: song.album || currentPlaylist.title,
+          cover: currentPlaylist.cover || "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=300",
+          audioUrl: song.audioUrl,
+          duration: song.duration
+        });
+      }
+    }
+
+    function prevTrack() {
+      if (currentPlaylist && currentPlaylist.songs && currentPlaylist.songs.length > 0) {
+        currentTrackIndex = (currentTrackIndex - 1 + currentPlaylist.songs.length) % currentPlaylist.songs.length;
+        const song = currentPlaylist.songs[currentTrackIndex];
+        playTrack({
+          title: song.title,
+          artist: song.artist,
+          album: song.album || currentPlaylist.title,
+          cover: currentPlaylist.cover || "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=300",
+          audioUrl: song.audioUrl,
+          duration: song.duration
+        });
+      }
+    }
+
+    playPauseBtn.addEventListener("click", togglePlay);
+    nextBtn.addEventListener("click", nextTrack);
+    prevBtn.addEventListener("click", prevTrack);
+
+    openLocalFileBtn.addEventListener("click", () => {
+      localFileInput.click();
+    });
+
+    localFileInput.addEventListener("change", (e) => {
+      const files = Array.from(e.target.files);
+      if (files.length === 0) return;
+
+      const localSongs = files.map((file) => {
+        const objectUrl = URL.createObjectURL(file);
+        const nameWithoutExt = file.name.replace(/\.[^/.]+$/, "");
+        return {
+          title: nameWithoutExt,
+          artist: "Local User Audio",
+          album: "My Computer Files",
+          duration: "3:30",
+          audioUrl: objectUrl
+        };
+      });
+
+      const localPlaylist = {
+        id: "local-files",
+        title: "Local Files",
+        artist: "Uploaded from Computer",
+        cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300",
+        songs: localSongs
+      };
+
+      topGridItems.unshift(localPlaylist);
+      renderTopCards();
+      showPlaylistView(localPlaylist);
+      playTrack(localSongs[0]);
+    });
+
+    function showHomeView() {
+      desktopHomeView.classList.remove("hidden");
+      desktopPlaylistView.classList.add("hidden");
+    }
+
+    function showPlaylistView(playlistObj) {
+      currentPlaylist = playlistObj;
+      desktopHomeView.classList.add("hidden");
+      desktopPlaylistView.classList.remove("hidden");
+
+      detailTitle.textContent = playlistObj.title;
+      detailSubtitle.textContent = playlistObj.artist || "Curated playlist for varun";
+      detailCover.src = playlistObj.cover || "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=300";
+      
+      const songs = playlistObj.songs || [
+        { title: playlistObj.title, artist: playlistObj.artist, album: "Single", duration: "3:40", audioUrl: playlistObj.audioUrl }
+      ];
+
+      detailSongCount.textContent = `${songs.length} songs`;
+      playlistTracksList.innerHTML = "";
+
+      songs.forEach((song, idx) => {
+        const row = document.createElement("div");
+        row.className = "grid grid-cols-12 gap-4 items-center px-4 py-2.5 rounded-md hover:bg-white/10 group cursor-pointer transition text-xs";
+        row.innerHTML = `
+          <div class="col-span-1 text-center font-mono text-spotify-subtext group-hover:text-white">
+            <span class="group-hover:hidden">${idx + 1}</span>
+            <svg class="w-3.5 h-3.5 hidden group-hover:inline fill-current text-white mx-auto" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+          <div class="col-span-5 flex items-center gap-3 truncate">
+            <div class="truncate">
+              <h5 class="font-bold text-white group-hover:text-spotify-green transition truncate text-sm">${song.title}</h5>
+              <p class="text-spotify-subtext truncate text-xs">${song.artist}</p>
+            </div>
+          </div>
+          <div class="col-span-4 text-spotify-subtext truncate">${song.album || playlistObj.title}</div>
+          <div class="col-span-2 text-right font-mono text-spotify-subtext">${song.duration}</div>
+        `;
+        row.addEventListener("click", () => {
+          currentTrackIndex = idx;
+          playTrack({
+            title: song.title,
+            artist: song.artist,
+            album: song.album || playlistObj.title,
+            cover: playlistObj.cover || "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=300",
+            audioUrl: song.audioUrl,
+            duration: song.duration
+          });
+        });
+        playlistTracksList.appendChild(row);
+      });
+    }
+
+    playlistPlayBtn.addEventListener("click", () => {
+      if (currentPlaylist && currentPlaylist.songs && currentPlaylist.songs.length > 0) {
+        const first = currentPlaylist.songs[0];
+        currentTrackIndex = 0;
+        playTrack({
+          title: first.title,
+          artist: first.artist,
+          album: first.album || currentPlaylist.title,
+          cover: currentPlaylist.cover || "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=300",
+          audioUrl: first.audioUrl,
+          duration: first.duration
+        });
+      }
+    });
+
+    topHomeBtn.addEventListener("click", showHomeView);
+
+    function renderTopCards() {
+      topCardsGrid.innerHTML = "";
+      topGridItems.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "flex items-center bg-spotify-highlight hover:bg-spotify-hover rounded-md overflow-hidden cursor-pointer group transition h-14 relative";
+        
+        let coverHtml = "";
+        if (item.isLikedTile) {
+          coverHtml = `
+            <div class="w-14 h-14 bg-gradient-to-br ${item.bgGradient} flex items-center justify-center flex-shrink-0 shadow">
+              <svg class="w-6 h-6 fill-current text-white" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+            </div>
+          `;
+        } else {
+          coverHtml = `<img src="${item.cover}" class="w-14 h-14 object-cover flex-shrink-0" />`;
+        }
+
+        card.innerHTML = `
+          ${coverHtml}
+          <span class="px-3 text-xs font-bold text-white truncate flex-1 leading-snug">${item.title}</span>
+          <button class="w-9 h-9 rounded-full bg-spotify-green hover:scale-105 active:scale-95 flex items-center justify-center text-black shadow-lg opacity-0 group-hover:opacity-100 transition duration-200 mr-2 flex-shrink-0">
+            <svg class="w-4 h-4 ml-0.5 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+        `;
+
+        card.addEventListener("click", () => {
+          showPlaylistView(item);
+        });
+
+        topCardsGrid.appendChild(card);
+      });
+    }
+
+    function renderCardCarousel(container, itemsList) {
+      container.innerHTML = "";
+      itemsList.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "bg-spotify-highlight hover:bg-spotify-hover p-3.5 rounded-lg cursor-pointer group transition duration-200 flex flex-col";
+        card.innerHTML = `
+          <div class="aspect-square w-full rounded-md overflow-hidden relative shadow-md mb-3 bg-neutral-900">
+            <img src="${item.cover}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+            <button class="w-10 h-10 rounded-full bg-spotify-green hover:scale-105 active:scale-95 flex items-center justify-center text-black shadow-xl absolute right-2 bottom-2 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition duration-200">
+              <svg class="w-5 h-5 ml-0.5 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+          </div>
+          <h4 class="text-xs font-bold text-white truncate">${item.title}</h4>
+          <p class="text-[11px] text-spotify-subtext truncate mt-1">${item.artist || item.subtitle}</p>
+        `;
+        card.addEventListener("click", () => {
+          playTrack({
+            title: item.title,
+            artist: item.artist || item.subtitle,
+            cover: item.cover,
+            audioUrl: item.audioUrl
+          });
+        });
+        container.appendChild(card);
+      });
+    }
+
+    function renderLibrary() {
+      libraryListContainer.innerHTML = "";
+      libraryItems.forEach(item => {
+        const row = document.createElement("div");
+        row.className = "flex items-center gap-3 p-2 rounded-md hover:bg-white/10 cursor-pointer group transition";
+
+        let visual = "";
+        if (item.isLikedTile) {
+          visual = `
+            <div class="w-11 h-11 rounded bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center flex-shrink-0 shadow">
+              <svg class="w-5 h-5 fill-current text-white" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+            </div>
+          `;
+        } else if (item.isLocal) {
+          visual = `
+            <div class="w-11 h-11 rounded bg-spotify-highlight border border-white/10 flex items-center justify-center flex-shrink-0">
+              <svg class="w-5 h-5 text-spotify-green fill-current" viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+            </div>
+          `;
+        } else {
+          visual = `<img src="${item.cover}" class="w-11 h-11 rounded object-cover flex-shrink-0 shadow" />`;
+        }
+
+        row.innerHTML = `
+          ${visual}
+          <div class="truncate flex-1">
+            <h5 class="text-xs font-bold text-white group-hover:text-spotify-green transition truncate">${item.title}</h5>
+            <p class="text-[11px] text-spotify-subtext truncate mt-0.5">${item.subtitle}</p>
+          </div>
+        `;
+
+        row.addEventListener("click", () => {
+          if (item.id === "local-files") {
+            localFileInput.click();
+            return;
+          }
+          const match = topGridItems.find(t => t.id === item.id);
+          if (match) {
+            showPlaylistView(match);
+          } else {
+            playTrack({
+              title: item.title,
+              artist: item.subtitle,
+              cover: item.cover || "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=300",
+              audioUrl: item.audioUrl
+            });
+          }
+        });
+
+        libraryListContainer.appendChild(row);
+      });
+    }
+
+    toggleSidebarBtn.addEventListener("click", () => {
+      nowPlayingSidebar.classList.toggle("hidden");
+    });
+    closeSidebarBtn.addEventListener("click", () => {
+      nowPlayingSidebar.classList.add("hidden");
+    });
+
+    desktopSearchInput.addEventListener("input", (e) => {
+      const q = e.target.value.trim().toLowerCase();
+      if (q.length > 0) {
+        clearSearchBtn.classList.remove("hidden");
+        const matched = topGridItems.filter(p => p.title.toLowerCase().includes(q) || (p.artist && p.artist.toLowerCase().includes(q)));
+        if (matched.length > 0) {
+          showPlaylistView(matched[0]);
+        }
+      } else {
+        clearSearchBtn.classList.add("hidden");
+        showHomeView();
+      }
+    });
+
+    clearSearchBtn.addEventListener("click", () => {
+      desktopSearchInput.value = "";
+      clearSearchBtn.classList.add("hidden");
+      showHomeView();
+    });
+
+    window.addEventListener("keydown", (e) => {
+      if (e.target.tagName === "INPUT") return;
+      if (e.code === "Space") {
+        e.preventDefault();
+        togglePlay();
+      } else if (e.code === "ArrowRight") {
+        nextTrack();
+      } else if (e.code === "ArrowLeft") {
+        prevTrack();
+      }
+    });
+
+    renderTopCards();
+    renderLibrary();
+    renderCardCarousel(jumpBackInRow, jumpBackInItems);
+    renderCardCarousel(recommendedStationsRow, recommendedStations);
+    renderCardCarousel(trendingRegionalRow, topGridItems.slice(5));
+  </script>
+</body>
+</html>

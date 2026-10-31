@@ -1,0 +1,143 @@
+:root {
+  --bg-gradient: radial-gradient(circle at 10% 20%, #1e1b4b 0%, #0f172a 90%);
+  --glass-bg: rgba(30, 41, 59, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --text-main: #f8fafc;
+  --text-dim: #94a3b8;
+  --text-preview: #38bdf8;
+  --op-color: #f59e0b;
+  --eq-color: #10b981;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  user-select: none;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-gradient);
+  padding: 1.5rem;
+}
+
+/* Glassmorphism Calculator Housing */
+.calculator-card {
+  width: 100%;
+  max-width: 360px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: 28px;
+  padding: 1.5rem;
+  box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.6),
+              inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Screen Layout */
+.display {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 18px;
+  padding: 1.25rem 1rem;
+  text-align: right;
+  margin-bottom: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 120px;
+  overflow: hidden;
+  word-break: break-all;
+}
+
+.history-row {
+  font-size: 0.95rem;
+  color: var(--text-dim);
+  min-height: 1.2rem;
+}
+
+.input-row {
+  font-size: 2.25rem;
+  font-weight: 600;
+  color: var(--text-main);
+  letter-spacing: -0.02em;
+  margin: 0.25rem 0;
+}
+
+.preview-row {
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--text-preview);
+  min-height: 1.3rem;
+}
+
+/* Keypad Grid */
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+}
+
+.btn {
+  height: 60px;
+  border-radius: 16px;
+  border: none;
+  font-size: 1.35rem;
+  font-weight: 500;
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
+}
+
+.btn:active,
+.btn.active-key {
+  transform: translateY(2px) scale(0.96);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Button Variants */
+.btn-action {
+  background: rgba(148, 163, 184, 0.15);
+  color: #cbd5e1;
+}
+
+.btn-op {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--op-color);
+  font-weight: 600;
+  font-size: 1.5rem;
+}
+
+.btn-op:hover {
+  background: rgba(245, 158, 11, 0.25);
+}
+
+.btn-equals {
+  background: var(--eq-color);
+  color: #064e3b;
+  font-weight: 700;
+  font-size: 1.6rem;
+}
+
+.btn-equals:hover {
+  background: #059669;
+  color: #f8fafc;
+}
+
+.btn-zero {
+  grid-column: span 2;
+  border-radius: 16px;
+}

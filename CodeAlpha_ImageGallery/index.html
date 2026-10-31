@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interactive Image Gallery</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>Visual Showcase</h1>
+    <p class="subtitle">Filter by category or apply visual effects</p>
+
+    <!-- Category Filters -->
+    <div class="control-group">
+      <span class="control-label">Category:</span>
+      <div class="filter-pills" id="categoryFilters">
+        <button class="pill active" data-filter="all">All</button>
+        <button class="pill" data-filter="nature">Nature</button>
+        <button class="pill" data-filter="city">City</button>
+        <button class="pill" data-filter="architecture">Architecture</button>
+      </div>
+    </div>
+
+    <!-- Live Image Style Filters (Bonus) -->
+    <div class="control-group">
+      <span class="control-label">Filter Effect:</span>
+      <div class="filter-pills" id="effectFilters">
+        <button class="pill active" data-effect="normal">Normal</button>
+        <button class="pill" data-effect="grayscale">Grayscale</button>
+        <button class="pill" data-effect="sepia">Sepia</button>
+        <button class="pill" data-effect="invert">Invert</button>
+        <button class="pill" data-effect="vintage">Vintage</button>
+        <button class="pill" data-effect="blur">Soft Focus</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="gallery-container" id="galleryContainer">
+    <div class="gallery-card" data-category="nature">
+      <div class="card-inner">
+        <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800" alt="Alpine Lake View" />
+        <div class="card-overlay">
+          <span class="tag">Nature</span>
+          <h3>Alpine Reflection</h3>
+          <p>Click to expand</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="gallery-card" data-category="city">
+      <div class="card-inner">
+        <img src="https://images.unsplash.com/photo-1477959858617-67f30bc75b82?w=800" alt="Downtown Skyline" />
+        <div class="card-overlay">
+          <span class="tag">City</span>
+          <h3>Downtown Twilight</h3>
+          <p>Click to expand</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="gallery-card" data-category="architecture">
+      <div class="card-inner">
+        <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?w=800" alt="Minimalist Pavilion" />
+        <div class="card-overlay">
+          <span class="tag">Architecture</span>
+          <h3>Minimal Concrete</h3>
+          <p>Click to expand</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="gallery-card" data-category="nature">
+      <div class="card-inner">
+        <img src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800" alt="Misty Redwood Trees" />
+        <div class="card-overlay">
+          <span class="tag">Nature</span>
+          <h3>Mist & Redwoods</h3>
+          <p>Click to expand</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="gallery-card" data-category="city">
+      <div class="card-inner">
+        <img src="https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=800" alt="Crosswalk at Sunset" />
+        <div class="card-overlay">
+          <span class="tag">City</span>
+          <h3>Golden Crossing</h3>
+          <p>Click to expand</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="gallery-card" data-category="architecture">
+      <div class="card-inner">
+        <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800" alt="Geometric Glass Skyscraper" />
+        <div class="card-overlay">
+          <span class="tag">Architecture</span>
+          <h3>Geometric Heights</h3>
+          <p>Click to expand</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Lightbox Modal -->
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox-close" id="closeBtn" aria-label="Close dialog">&times;</button>
+    <button class="lightbox-nav prev" id="prevBtn" aria-label="Previous image">&#10094;</button>
+
+    <div class="lightbox-stage">
+      <div class="lightbox-img-wrapper">
+        <img src="" alt="" id="lightboxImg" />
+      </div>
+      <div class="lightbox-meta">
+        <h2 id="lightboxTitle"></h2>
+        <span class="tag" id="lightboxTag"></span>
+      </div>
+    </div>
+
+    <button class="lightbox-nav next" id="nextBtn" aria-label="Next image">&#10095;</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
